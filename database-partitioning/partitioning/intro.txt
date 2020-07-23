@@ -1,0 +1,5 @@
+As our database grows we will need to scale our database the x-axis of the scale cube is about scaling the database (horizontal partitioning)
+horizontal partitioning or sharding involves adding more database instances that are each designed to store and provide access to a "part" of the 
+database, each database is called a "shard". Each database is called a "shard" , there are many ways in which your database can be horizontally 
+partitoned, you can horizontally partiton your database by the alphabet, region/zone, random identifiers etc
+

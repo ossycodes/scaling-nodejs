@@ -1,0 +1,5 @@
+when scaling Nodejs applications acrosses instances the need for a dataabase arises , when we have multiple processes of the same instance cloned, they need 
+to act on the same data, but the memory used by each process is not shared.
+The easiest way to synchronize your data across all your instances is by using a database ( it;s important to use a dedicated database that is accessible by all of your 
+instances).
+As you scale your application you can also scale your application databases
