@@ -1,0 +1,75 @@
+
+--- This is the application when we have converted from monolith to microservices ----
+
+Steps taken:
+
+1) so we have to split the monolith ticket application into 2 services 
+ a) one to focus on shows
+ b) and the other to focus on reservations
+
+2) we need to split the data, microservices can operate and should operate their own databases 
+ a) we create 2 new folders data-shows and data-reservations each contains data specfic to each, so
+ we have 2 databases 1 for handling the shows type and the other handling the reservations type
+ b) next we gon need two 2 services so instead of a ticket-system.js we gon have a show-service.js and a reservation-service.js files
+ so we gon take the code from the ticket-system and split it into both of these files , we strip out anything that has to do with shows and reservations
+ respectively from the ticket-system.js file 
+
+( the routes that have to do with shows are releasing seats, holding seats, show seat and lastly / .
+ we start the show service on 3001 
+
+the routes that have to do with reservations are cancel, reserveTickets, show a particular reservation and lastly the inital / route.
+we start the show service on 3002  )
+
+
+so let's start both services
+
+pm2 start show-service -i 4 (we start 4 instances maybe because the show service will contain more traffic yeah ?)
+pm2 start show-service -i 2
+
+we can make http request to each service
+
+(show service)
+curl http://localhost:3001
+//make a reservation for a particular show
+curl -X PUT http://localhost:3001/hold-seats -d "count=3&showID=5b805a00297ae6047030f2e0"
+
+
+(reservation service)
+curl http://localhost:3002
+
+3) now that we have 2 seperate services running we need to orchestrate the services to 
+registration process.
+
+----- Orchestration -----
+when we decompose our application into Microservices we have to consider how they will work together
+sometimes a single action performed by a client will need to work various services to complete that action
+consider the checkout process theatres have limited space, so when a user purchases a ticket thier seats needs
+to be reserved, if the show is sold out then the user should not be able to purchase any tickets for that show.
+before a user can purchase a ticket they need to ensure that a show has seats available, that functionality is found
+in the show service, if they are sits then they need to checkout and purchase a ticket 
+once the ticket is purchased , the show service then needs to be updated, it will need to reserve sit for that customer 
+for a specfic show. sometimes we place this orchestration requirement on the client it'self (this means in frontend application
+or mobile application or admin portals that they need to know how to work with these services and make sure they are checking the shows 
+for seats before proceeding to checkout on their own) but if we want to be nice to our client we should provide a single checkout process
+that can be invoked and handle the orchestration in details from the backend, one
+
+API Orchestration --> This means we will provide a single API that we will use to interact with all of the clients and orchestrate the microservices
+that are required to perform an action, another orchestration technique is to incoporate a messaging layer, we can think of this 
+as been a backdoor to your service, customers come in through the front door the API and the goods that are purchased from other bussinesses are delivered
+to the backdoor.
+
+
+Let;s take a look at how we can create an API layer to orchestrate the process
+of making a reservation
+
+Steps taken:
+
+1)create another API service (app.js) --> will orchestrate making a reservation with multiple services. 
+2)start our last service using pm2, pm2 start app.js -i 2 (2 instances) 
+now all of our client interaction should go through this app.js service
+
+curl http://localhost:3000/
+
+
+
+---> one benefit of api orchestration is security we can only expose underlying part of the services which we want our client to consume

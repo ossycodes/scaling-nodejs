@@ -1,0 +1,6 @@
+This is an express monolith api that handles reservations and reserving sits for show with two different data points
+
+pm2 start -i 3 
+make http request to localhost:3000/ curl http://localhost:3000
+
+--- This the application we will convert to microservices ----
